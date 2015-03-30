@@ -18,3 +18,9 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
+
+
+RC_FILE = LaserpointerControl.rc
+
+RESOURCES += \
+    resourcelist.qrc
