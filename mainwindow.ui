@@ -268,7 +268,7 @@
         </attribute>
        </widget>
       </widget>
-      <widget class="QOpenGLWidget" name="openGLWidget">
+      <widget class="OpenGLSimulation" name="openGLWidget">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -288,6 +288,13 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>OpenGLSimulation</class>
+   <extends>QOpenGLWidget</extends>
+   <header>openglsimulation.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resourcelist.qrc"/>
  </resources>
