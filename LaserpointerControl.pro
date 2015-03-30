@@ -13,9 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    openglsimulation.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    openglsimulation.h
 
 FORMS    += mainwindow.ui
 
