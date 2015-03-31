@@ -5,5 +5,11 @@
         <file>images/arrowL.png</file>
         <file>images/arrowR.png</file>
         <file>images/arrowU.png</file>
+        <file>images/laser.png</file>
+        <file>images/servo.png</file>
+    </qresource>
+    <qresource prefix="/shader">
+        <file>shader/fshader.glsl</file>
+        <file>shader/vshader.glsl</file>
     </qresource>
 </RCC>
