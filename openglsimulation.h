@@ -57,6 +57,8 @@ private:
     QVector3D servoSize;
     QVector3D servoSpindle;
     QVector3D servoSpindleSize;
+    QVector3D servo2Contact;
+    QVector3D laserSize;
 
     double firstLaserAngle;
     double secondLaserAngle;
