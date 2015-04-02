@@ -9,6 +9,9 @@
 #include <QBasicTimer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
+#include <QMouseEvent>
+
+#include "geometryengine.h"
 
 class OpenGLSimulation : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -21,9 +24,18 @@ public:
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
 
+protected:
+    void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void timerEvent(QTimerEvent *e) Q_DECL_OVERRIDE;
+
 private:
     void initShaders();
     void initTextures();
+
+    void recalcCameraMat();
+    void paintCube(QMatrix4x4 worldMat);
 
 private:
     QBasicTimer timer;
@@ -31,7 +43,23 @@ private:
     QOpenGLShaderProgram program;
     QOpenGLTexture *texture;
 
+    GeometryEngine *geometries;
+
     QMatrix4x4 projectionMat;
+
+    double rotationAngle;
+    double nickAngle;
+
+    QPoint lastPos;
+
+    QMatrix4x4 cameraMat;
+
+    QVector3D servoSize;
+    QVector3D servoSpindle;
+    QVector3D servoSpindleSize;
+
+    double firstLaserAngle;
+    double secondLaserAngle;
 
 signals:
 
