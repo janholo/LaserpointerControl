@@ -159,6 +159,33 @@
           </widget>
          </item>
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="topMargin">
+            <number>10</number>
+           </property>
+           <property name="bottomMargin">
+            <number>10</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Select the State of the Laser:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="laserStateComboBox"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
           <layout class="QGridLayout" name="gridLayout_2">
            <property name="leftMargin">
             <number>10</number>
@@ -180,7 +207,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="xAxisLabel">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
                <horstretch>0</horstretch>
@@ -193,7 +220,7 @@
             </widget>
            </item>
            <item row="1" column="0" colspan="2">
-            <widget class="QSlider" name="horizontalSlider">
+            <widget class="QSlider" name="xAxisSlider">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -227,14 +254,14 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="yAxisLabel">
              <property name="text">
               <string>0 °</string>
              </property>
             </widget>
            </item>
            <item row="1" column="0" colspan="2">
-            <widget class="QSlider" name="horizontalSlider_2">
+            <widget class="QSlider" name="yAxisSlider">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>

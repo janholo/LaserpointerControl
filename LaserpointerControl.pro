@@ -15,11 +15,19 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     openglsimulation.cpp \
-    geometryengine.cpp
+    geometryengine.cpp \
+    laserpointer.cpp \
+    observedsubject.cpp \
+    observer.cpp \
+    uartinterface.cpp
 
 HEADERS  += mainwindow.h \
     openglsimulation.h \
-    geometryengine.h
+    geometryengine.h \
+    laserpointer.h \
+    observedsubject.h \
+    observer.h \
+    uartinterface.h
 
 FORMS    += mainwindow.ui
 

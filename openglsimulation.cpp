@@ -13,10 +13,12 @@ OpenGLSimulation::OpenGLSimulation(QWidget *parent)
     servo2Contact = QVector3D(0.0,-2.5,3.25);
     laserSize = QVector3D(1.25,1.25,4.0);
 
-
+    cameraDistance = 15.0;
 
     firstLaserAngle = 0.0;
     secondLaserAngle = 0.0;
+
+    laserMode = LASER_OFF;
 }
 
 OpenGLSimulation::~OpenGLSimulation()
@@ -105,12 +107,10 @@ void OpenGLSimulation::resizeGL(int w, int h)
 void OpenGLSimulation::recalcCameraMat()
 {
     cameraMat.setToIdentity();
-    cameraMat.translate(0,-5,-15);
+    cameraMat.translate(0,0,-cameraDistance);
     cameraMat.rotate(QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),nickAngle));
     cameraMat.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0),rotationAngle));
-
-    firstLaserAngle = nickAngle;
-    secondLaserAngle = rotationAngle;
+    cameraMat.translate(0,-5,0);
 }
 
 void OpenGLSimulation::paintGL()
@@ -121,9 +121,9 @@ void OpenGLSimulation::paintGL()
 
     //Draw plane at the ground
     QMatrix4x4 matrix;
-    matrix.scale(0.1,0.1,0.1);
+//    matrix.scale(0.1,0.1,0.1);
 
-    paintCube(matrix);
+//    paintCube(matrix);
 
     // Plane
 //    matrix.setToIdentity();
@@ -143,7 +143,7 @@ void OpenGLSimulation::paintGL()
     matrix.setToIdentity();
     matrix.translate(0.0, servoSpindleSize.y()/2.0, 0.0);
     matrix.translate(servoSpindle);
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
     matrix.scale(servoSpindleSize);
 
     paintCube(matrix);
@@ -153,7 +153,7 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
     matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
 
     matrix.translate(servo2Contact);
@@ -168,7 +168,7 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
     matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
 
 
@@ -177,7 +177,7 @@ void OpenGLSimulation::paintGL()
 
     matrix.translate(0.0, servoSpindleSize.y()/2.0, 0.0);
     matrix.translate(servoSpindle);
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), secondLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), secondLaserAngle));
     matrix.scale(servoSpindleSize);
 
     paintCube(matrix);
@@ -188,7 +188,7 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
     matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
 
 
@@ -198,10 +198,35 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), secondLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), secondLaserAngle));
     matrix.scale(laserSize);
 
     paintCube(matrix);
+
+    if(laserMode == LASER_ON)
+    {
+        // Red Laser Beam
+        matrix.setToIdentity();
+
+        matrix.translate(0.0, servoSpindleSize.y(), 0.0);
+        matrix.translate(servoSpindle);
+
+        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
+        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
+
+
+        matrix.translate(servo2Contact);
+
+        matrix.translate(0.0, laserSize.y()/2.0, 0.0);
+        matrix.translate(0.0, servoSpindleSize.y(), 0.0);
+        matrix.translate(servoSpindle);
+
+        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), secondLaserAngle));
+        matrix.translate(0,0,-50);
+        matrix.scale(0.1,0.1,100);
+
+        paintCube(matrix);
+    }
 }
 
 void OpenGLSimulation::paintCube(QMatrix4x4 worldMat)
@@ -255,6 +280,19 @@ void OpenGLSimulation::mouseMoveEvent(QMouseEvent *e)
     lastPos = e->globalPos();
 }
 
+void OpenGLSimulation::wheelEvent(QWheelEvent *e)
+{
+
+    cameraDistance -= e->angleDelta().y()/100;
+
+    if(cameraDistance < 2.0)
+        cameraDistance = 2.0;
+
+    recalcCameraMat();
+
+
+}
+
 void OpenGLSimulation::timerEvent(QTimerEvent *)
 {
 
@@ -263,4 +301,9 @@ void OpenGLSimulation::timerEvent(QTimerEvent *)
     update();
 }
 
-
+void OpenGLSimulation::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode)
+{
+    firstLaserAngle = angles.x();
+    secondLaserAngle = angles.y();
+    this->laserMode = laserMode;
+}

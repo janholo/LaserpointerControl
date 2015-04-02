@@ -12,8 +12,9 @@
 #include <QMouseEvent>
 
 #include "geometryengine.h"
+#include "observer.h"
 
-class OpenGLSimulation : public QOpenGLWidget, protected QOpenGLFunctions
+class OpenGLSimulation : public QOpenGLWidget, protected QOpenGLFunctions, public Observer
 {
     Q_OBJECT
 public:
@@ -24,11 +25,16 @@ public:
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
 
+    void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode);
+
 protected:
     void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *e) Q_DECL_OVERRIDE;
+
     void timerEvent(QTimerEvent *e) Q_DECL_OVERRIDE;
+
 
 private:
     void initShaders();
@@ -62,6 +68,10 @@ private:
 
     double firstLaserAngle;
     double secondLaserAngle;
+
+    double cameraDistance;
+
+    LaserMode laserMode;
 
 signals:
 
