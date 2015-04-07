@@ -45,16 +45,24 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
+enum GeometryType
+{
+    CUBE,
+    PLANE
+};
+
 class GeometryEngine : protected QOpenGLFunctions
 {
 public:
-    GeometryEngine();
+    GeometryEngine(GeometryType type);
     virtual ~GeometryEngine();
 
-    void drawCubeGeometry(QOpenGLShaderProgram *program);
+    void drawGeometry(QOpenGLShaderProgram *program);
+
 
 private:
     void initCubeGeometry();
+    void initPlaneGeometry();
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;

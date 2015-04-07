@@ -42,14 +42,19 @@ private:
 
     void recalcCameraMat();
     void paintCube(QMatrix4x4 worldMat);
+    void paintPlane(QMatrix4x4 worldMat);
 
 private:
     QBasicTimer timer;
 
     QOpenGLShaderProgram program;
-    QOpenGLTexture *texture;
+    QOpenGLTexture *servoTexture;
 
-    GeometryEngine *geometries;
+    QOpenGLTexture *grassTexture;
+    QOpenGLTexture *laserTexture;
+
+    GeometryEngine *cubeGeometry;
+    GeometryEngine *planeGeometry;
 
     QMatrix4x4 projectionMat;
 

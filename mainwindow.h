@@ -22,12 +22,11 @@ public:
 
 private slots:
 
-
-    void on_xAxisSlider_sliderMoved(int position);
-
-    void on_yAxisSlider_sliderMoved(int position);
-
     void on_laserStateComboBox_currentIndexChanged(int index);
+
+    void on_xAxisSlider_valueChanged(int value);
+
+    void on_yAxisSlider_valueChanged(int value);
 
 private:
     Ui::MainWindow *ui;

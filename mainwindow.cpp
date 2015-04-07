@@ -39,17 +39,17 @@ void MainWindow::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode l
     ui->laserStateComboBox->setCurrentIndex(laserMode);
 }
 
-void MainWindow::on_xAxisSlider_sliderMoved(int position)
-{
-    laserpointer.setAngleX(position);
-}
-
-void MainWindow::on_yAxisSlider_sliderMoved(int position)
-{
-    laserpointer.setAngleY(position);
-}
-
 void MainWindow::on_laserStateComboBox_currentIndexChanged(int index)
 {
     laserpointer.setLaserMode(static_cast<LaserMode>(index));
+}
+
+void MainWindow::on_xAxisSlider_valueChanged(int value)
+{
+    laserpointer.setAngleX(value);
+}
+
+void MainWindow::on_yAxisSlider_valueChanged(int value)
+{
+    laserpointer.setAngleY(value);
 }

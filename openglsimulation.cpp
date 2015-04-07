@@ -26,8 +26,11 @@ OpenGLSimulation::~OpenGLSimulation()
     // Make sure the context is current when deleting the texture
     // and the buffers.
     makeCurrent();
-    delete texture;
-    delete geometries;
+    delete servoTexture;
+    delete grassTexture;
+    delete laserTexture;
+    delete cubeGeometry;
+    delete planeGeometry;
     doneCurrent();
 }
 
@@ -46,7 +49,12 @@ void OpenGLSimulation::initializeGL()
     // Enable back face culling
     glEnable(GL_CULL_FACE);
 
-    geometries = new GeometryEngine;
+    glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_LINE_SMOOTH);
+    glEnable(GL_POLYGON_SMOOTH);
+
+    cubeGeometry = new GeometryEngine(CUBE);
+    planeGeometry = new GeometryEngine(PLANE);
 
     recalcCameraMat();
 
@@ -76,17 +84,28 @@ void OpenGLSimulation::initShaders()
 void OpenGLSimulation::initTextures()
 {
     // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":images/images/servo.png"));
+    servoTexture = new QOpenGLTexture(QImage(":images/images/servo.png"));
 
     // Set nearest filtering mode for texture minification
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    servoTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
     // Set bilinear filtering mode for texture magnification
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    servoTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-    texture->setWrapMode(QOpenGLTexture::Repeat);
+    servoTexture->setWrapMode(QOpenGLTexture::Repeat);
+
+
+    grassTexture = new QOpenGLTexture(QImage(":images/images/grass.png"));
+    grassTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    grassTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    grassTexture->setWrapMode(QOpenGLTexture::Repeat);
+
+    laserTexture = new QOpenGLTexture(QImage(":images/images/laser.png"));
+    laserTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    laserTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    laserTexture->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void OpenGLSimulation::resizeGL(int w, int h)
@@ -95,7 +114,7 @@ void OpenGLSimulation::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 3.0, zFar = 100.0, fov = 45.0;
+    const qreal zNear = 1.0, zFar = 1000.0, fov = 45.0;
 
     // Reset projection
     projectionMat.setToIdentity();
@@ -110,27 +129,24 @@ void OpenGLSimulation::recalcCameraMat()
     cameraMat.translate(0,0,-cameraDistance);
     cameraMat.rotate(QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),nickAngle));
     cameraMat.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0),rotationAngle));
-    cameraMat.translate(0,-5,0);
+    cameraMat.translate(0,-5,2.5);
 }
 
 void OpenGLSimulation::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    texture->bind();
-
-    //Draw plane at the ground
     QMatrix4x4 matrix;
-//    matrix.scale(0.1,0.1,0.1);
 
-//    paintCube(matrix);
+    grassTexture->bind();
 
-    // Plane
-//    matrix.setToIdentity();
-//    matrix.translate(0.0, -0.5, 0.0);
-//    matrix.scale(20.0, 1.0, 20.0);
+    //Draw grass at the ground
+    matrix.setToIdentity();
+    matrix.scale(1000.0, 1.0, 1000.0);
 
-//    paintCube(matrix);
+    paintPlane(matrix);
+
+    servoTexture->bind();
 
     // Base Servo
     matrix.setToIdentity();
@@ -205,6 +221,8 @@ void OpenGLSimulation::paintGL()
 
     if(laserMode == LASER_ON)
     {
+        laserTexture->bind();
+
         // Red Laser Beam
         matrix.setToIdentity();
 
@@ -222,10 +240,12 @@ void OpenGLSimulation::paintGL()
         matrix.translate(servoSpindle);
 
         matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), secondLaserAngle));
-        matrix.translate(0,0,-50);
-        matrix.scale(0.1,0.1,100);
+        matrix.translate(0,0,-500);
+        matrix.scale(0.1,0.1,1000);
 
         paintCube(matrix);
+
+        servoTexture->bind();
     }
 }
 
@@ -238,7 +258,19 @@ void OpenGLSimulation::paintCube(QMatrix4x4 worldMat)
     program.setUniformValue("texture", 0);
 
     // Draw cube geometry
-    geometries->drawCubeGeometry(&program);
+    cubeGeometry->drawGeometry(&program);
+}
+
+void OpenGLSimulation::paintPlane(QMatrix4x4 worldMat)
+{
+    // Set modelview-projection matrix
+    program.setUniformValue("mvp_matrix", projectionMat * cameraMat * worldMat);
+
+    // Use texture unit 0 which contains cube.png
+    program.setUniformValue("texture", 0);
+
+    // Draw cube geometry
+    planeGeometry->drawGeometry(&program);
 }
 
 void OpenGLSimulation::mousePressEvent(QMouseEvent *e)

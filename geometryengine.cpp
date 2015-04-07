@@ -49,8 +49,8 @@ struct VertexData
     QVector2D texCoord;
 };
 
-//! [0]
-GeometryEngine::GeometryEngine()
+
+GeometryEngine::GeometryEngine(GeometryType type)
     : indexBuf(QOpenGLBuffer::IndexBuffer)
 {
     initializeOpenGLFunctions();
@@ -59,8 +59,20 @@ GeometryEngine::GeometryEngine()
     arrayBuf.create();
     indexBuf.create();
 
-    // Initializes cube geometry and transfers it to VBOs
-    initCubeGeometry();
+    if(type == CUBE)
+    {
+        // Initializes cube geometry and transfers it to VBOs
+        initCubeGeometry();
+    }
+    else if(type == PLANE)
+    {
+        initPlaneGeometry();
+    }
+    else
+    {
+        //Default Cube Geometry
+        initCubeGeometry();
+    }
 }
 
 GeometryEngine::~GeometryEngine()
@@ -68,7 +80,7 @@ GeometryEngine::~GeometryEngine()
     arrayBuf.destroy();
     indexBuf.destroy();
 }
-//! [0]
+
 
 void GeometryEngine::initCubeGeometry()
 {
@@ -129,7 +141,7 @@ void GeometryEngine::initCubeGeometry()
         20, 20, 21, 22, 23      // Face 5 - triangle strip (v20, v21, v22, v23)
     };
 
-//! [1]
+
     // Transfer vertex data to VBO 0
     arrayBuf.bind();
     arrayBuf.allocate(vertices, 24 * sizeof(VertexData));
@@ -137,11 +149,47 @@ void GeometryEngine::initCubeGeometry()
     // Transfer index data to VBO 1
     indexBuf.bind();
     indexBuf.allocate(indices, 34 * sizeof(GLushort));
-//! [1]
+
 }
 
-//! [2]
-void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
+void GeometryEngine::initPlaneGeometry()
+{
+    // For cube we would need only 8 vertices but we have to
+    // duplicate vertex for each face because texture coordinate
+    // is different.
+    VertexData vertices[] = {
+        // Vertex data
+        {QVector3D(-0.5f,  0.0f,  -0.5f), QVector2D(0.0f, 0.0f)},  // v0
+        {QVector3D(-0.5f,  0.0f,   0.5f), QVector2D(0.0f, 50.0f)}, // v1
+        {QVector3D( 0.5f,  0.0f,   0.5f), QVector2D(50.0f, 50.0f)},  // v2
+        {QVector3D( 0.5f,  0.0f,  -0.5f), QVector2D(50.0f, 0.0f)}, // v3
+    };
+
+    // Indices for drawing cube faces using triangle strips.
+    // Triangle strips can be connected by duplicating indices
+    // between the strips. If connecting strips have opposite
+    // vertex order then last index of the first strip and first
+    // index of the second strip needs to be duplicated. If
+    // connecting strips have same vertex order then only last
+    // index of the first strip needs to be duplicated.
+    GLushort indices[] = {
+        0, 1, 2, 3
+
+    };
+
+
+    // Transfer vertex data to VBO 0
+    arrayBuf.bind();
+    arrayBuf.allocate(vertices, 4 * sizeof(VertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf.bind();
+    indexBuf.allocate(indices, 4 * sizeof(GLushort));
+
+}
+
+
+void GeometryEngine::drawGeometry(QOpenGLShaderProgram *program)
 {
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
@@ -166,4 +214,4 @@ void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
     // Draw cube geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLE_STRIP, 34, GL_UNSIGNED_SHORT, 0);
 }
-//! [2]
+
