@@ -228,7 +228,7 @@
            <item row="1" column="0" colspan="2">
             <widget class="QSlider" name="xAxisSlider">
              <property name="tracking">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -272,7 +272,7 @@
            <item row="1" column="0" colspan="2">
             <widget class="QSlider" name="yAxisSlider">
              <property name="tracking">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>

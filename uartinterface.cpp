@@ -2,6 +2,8 @@
 
 UARTInterface::UARTInterface()
 {
+    connected = false;
+
     serialPort.setPortName("COM5");
 
     serialPort.setBaudRate(QSerialPort::Baud19200);
@@ -10,7 +12,11 @@ UARTInterface::UARTInterface()
     serialPort.setStopBits(QSerialPort::OneStop);
     serialPort.setFlowControl(QSerialPort::NoFlowControl);
 
-    serialPort.open(QSerialPort::ReadWrite);
+    if(serialPort.open(QSerialPort::ReadWrite))
+    {
+        connected = true;
+    }
+
 
 }
 
@@ -21,6 +27,11 @@ UARTInterface::~UARTInterface()
 
 void UARTInterface::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode)
 {
+    if(connected == false)
+    {
+        return;
+    }
+
     //Invert the angles
     angles = -angles;
 
@@ -41,7 +52,13 @@ void UARTInterface::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMod
     else if(laserMode == LASER_OFF)
         msg[4] = 0x02;
 
-    serialPort.write(msg, 5);
+    int sendCount = serialPort.write(msg, 5);
 
+    if(sendCount != 5)
+    {
+        QMessageBox messageBox;
+        messageBox.critical(0,"Error","Data was not completely send!");
+        messageBox.setFixedSize(500,200);
+    }
 
 }
