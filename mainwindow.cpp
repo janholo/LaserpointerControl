@@ -10,11 +10,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->laserStateComboBox->addItem("LASER_OFF");
     ui->laserStateComboBox->addItem("LASER_ON");
 
+    direction = NONE;
+    //Create Timer
+
 
     laserpointer.registerObserver(this);
     laserpointer.registerObserver(ui->openGLWidget);
     laserpointer.notifyObservers();
 
+    timer.start(10, this);
 }
 
 MainWindow::~MainWindow()
@@ -28,13 +32,13 @@ void MainWindow::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode l
     ui->xAxisSlider->setMinimum(minMaxAngles.left());
     ui->xAxisSlider->setMaximum(minMaxAngles.right());
     ui->xAxisSlider->setSliderPosition(angles.x());
-    ui->xAxisLabel->setText(QString::number(angles.x()) + " °");
+    ui->xAxisLabel->setText(QString::number(angles.x(), 'f', 1) + " °");
 
 
     ui->yAxisSlider->setMinimum(minMaxAngles.top());
     ui->yAxisSlider->setMaximum(minMaxAngles.bottom());
     ui->yAxisSlider->setSliderPosition(angles.y());
-    ui->yAxisLabel->setText(QString::number(angles.y()) + " °");
+    ui->yAxisLabel->setText(QString::number(angles.y(), 'f', 1) + " °");
 
     ui->laserStateComboBox->setCurrentIndex(laserMode);
 }
@@ -61,15 +65,89 @@ void MainWindow::on_pushButton_3_clicked()
 }
 
 
-
 void MainWindow::on_pushButton_4_pressed()
 {
-    qreal xTemp = laserpointer.getAngles().x() - 0.1;
-    laserpointer.setAngleX(std::max(xTemp, laserpointer.getMinMaxAngles().left()));
+    laserpointer.setAngleX(laserpointer.getAngles().x() - 0.1);
+
     //Start Timer
+    counter = 0;
+    direction = LEFT;
 }
+
 
 void MainWindow::on_pushButton_4_released()
 {
+    counter = 0;
+    direction = NONE;
+}
 
+void MainWindow::timerEvent(QTimerEvent *)
+{
+    counter++;
+    if(counter >= 20)
+    {
+        if(direction == LEFT)
+        {
+            laserpointer.setAngleX(laserpointer.getAngles().x() - 0.1f);
+        }
+        else if(direction == RIGHT)
+        {
+            laserpointer.setAngleX(laserpointer.getAngles().x() + 0.1f);
+        }
+        else if(direction == UP)
+        {
+            laserpointer.setAngleY(laserpointer.getAngles().y() + 0.1f);
+        }
+        else if(direction == DOWN)
+        {
+            laserpointer.setAngleY(laserpointer.getAngles().y() - 0.1f);
+        }
+
+    }
+}
+
+
+void MainWindow::on_pushButton_pressed()
+{
+    laserpointer.setAngleY(laserpointer.getAngles().y() + 0.1);
+
+    //Start Timer
+    counter = 0;
+    direction = UP;
+}
+
+void MainWindow::on_pushButton_released()
+{
+    counter = 0;
+    direction = NONE;
+}
+
+void MainWindow::on_pushButton_5_pressed()
+{
+    laserpointer.setAngleX(laserpointer.getAngles().x() + 0.1);
+
+    //Start Timer
+    counter = 0;
+    direction = RIGHT;
+}
+
+void MainWindow::on_pushButton_5_released()
+{
+    counter = 0;
+    direction = NONE;
+}
+
+void MainWindow::on_pushButton_2_pressed()
+{
+    laserpointer.setAngleY(laserpointer.getAngles().y() - 0.1);
+
+    //Start Timer
+    counter = 0;
+    direction = DOWN;
+}
+
+void MainWindow::on_pushButton_2_released()
+{
+    counter = 0;
+    direction = NONE;
 }

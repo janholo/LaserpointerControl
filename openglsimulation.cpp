@@ -15,8 +15,10 @@ OpenGLSimulation::OpenGLSimulation(QWidget *parent)
 
     cameraDistance = 15.0;
 
-    firstLaserAngle = 0.0;
-    secondLaserAngle = 0.0;
+    actualAngle = QPointF(0,0);
+    actualAngleSpeed = QPointF(90,90);
+    targetAngle = QPointF(0,0);
+
 
     laserMode = LASER_OFF;
 }
@@ -159,7 +161,7 @@ void OpenGLSimulation::paintGL()
     matrix.setToIdentity();
     matrix.translate(0.0, servoSpindleSize.y()/2.0, 0.0);
     matrix.translate(servoSpindle);
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.x()));
     matrix.scale(servoSpindleSize);
 
     paintCube(matrix);
@@ -169,7 +171,7 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.x()));
     matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
 
     matrix.translate(servo2Contact);
@@ -184,7 +186,7 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.x()));
     matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
 
 
@@ -193,7 +195,7 @@ void OpenGLSimulation::paintGL()
 
     matrix.translate(0.0, servoSpindleSize.y()/2.0, 0.0);
     matrix.translate(servoSpindle);
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), secondLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.y()));
     matrix.scale(servoSpindleSize);
 
     paintCube(matrix);
@@ -204,7 +206,7 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.x()));
     matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
 
 
@@ -214,7 +216,7 @@ void OpenGLSimulation::paintGL()
     matrix.translate(0.0, servoSpindleSize.y(), 0.0);
     matrix.translate(servoSpindle);
 
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), secondLaserAngle));
+    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.y()));
     matrix.scale(laserSize);
 
     paintCube(matrix);
@@ -229,7 +231,7 @@ void OpenGLSimulation::paintGL()
         matrix.translate(0.0, servoSpindleSize.y(), 0.0);
         matrix.translate(servoSpindle);
 
-        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), firstLaserAngle));
+        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.x()));
         matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
 
 
@@ -239,7 +241,7 @@ void OpenGLSimulation::paintGL()
         matrix.translate(0.0, servoSpindleSize.y(), 0.0);
         matrix.translate(servoSpindle);
 
-        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), secondLaserAngle));
+        matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), actualAngle.y()));
         matrix.translate(0,0,-500);
         matrix.scale(0.1,0.1,1000);
 
@@ -327,7 +329,28 @@ void OpenGLSimulation::wheelEvent(QWheelEvent *e)
 
 void OpenGLSimulation::timerEvent(QTimerEvent *)
 {
+    //Recalculate the Position of the Servo
+    if(targetAngle.x() < actualAngle.x())
+    {
+        actualAngle.setX(actualAngle.x() - actualAngleSpeed.x()*12/1000);
+        actualAngle.setX(qMax(actualAngle.x(), targetAngle.x()));
+    }
+    else if(targetAngle.x() > actualAngle.x())
+    {
+        actualAngle.setX(actualAngle.x() + actualAngleSpeed.x()*12/1000);
+        actualAngle.setX(qMin(actualAngle.x(), targetAngle.x()));
+    }
 
+    if(targetAngle.y() < actualAngle.y())
+    {
+        actualAngle.setY(actualAngle.y() - actualAngleSpeed.y()*12/1000);
+        actualAngle.setY(qMax(actualAngle.y(), targetAngle.y()));
+    }
+    else if(targetAngle.y() > actualAngle.y())
+    {
+        actualAngle.setY(actualAngle.y() + actualAngleSpeed.y()*12/1000);
+        actualAngle.setY(qMin(actualAngle.y(), targetAngle.y()));
+    }
 
     // Request an update
     update();
@@ -335,7 +358,6 @@ void OpenGLSimulation::timerEvent(QTimerEvent *)
 
 void OpenGLSimulation::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode)
 {
-    firstLaserAngle = angles.x();
-    secondLaserAngle = angles.y();
+    targetAngle = angles;
     this->laserMode = laserMode;
 }

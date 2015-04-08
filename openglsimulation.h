@@ -71,12 +71,16 @@ private:
     QVector3D servo2Contact;
     QVector3D laserSize;
 
-    double firstLaserAngle;
-    double secondLaserAngle;
 
     double cameraDistance;
 
     LaserMode laserMode;
+
+    QPointF actualAngle;
+    QPointF actualAngleSpeed;
+
+
+    QPointF targetAngle;
 
 signals:
 
