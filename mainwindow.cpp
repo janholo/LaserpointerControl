@@ -53,3 +53,23 @@ void MainWindow::on_yAxisSlider_valueChanged(int value)
 {
     laserpointer.setAngleY(value);
 }
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    laserpointer.setAngles(QPointF(0,0));
+}
+
+
+
+void MainWindow::on_pushButton_4_pressed()
+{
+    qreal xTemp = laserpointer.getAngles().x() - 0.1;
+    laserpointer.setAngleX(std::max(xTemp, laserpointer.getMinMaxAngles().left()));
+    //Start Timer
+}
+
+void MainWindow::on_pushButton_4_released()
+{
+
+}

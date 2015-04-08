@@ -28,6 +28,13 @@ private slots:
 
     void on_yAxisSlider_valueChanged(int value);
 
+
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_4_pressed();
+
+    void on_pushButton_4_released();
+
 private:
     Ui::MainWindow *ui;
 

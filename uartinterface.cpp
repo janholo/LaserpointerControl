@@ -29,7 +29,7 @@ void UARTInterface::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMod
     else if(laserMode == LASER_OFF)
         msg[4] = 0x02;
 
-    pGame->sendSerialMessage(msg);
+    //pGame->sendSerialMessage(msg);
 
 
 }
