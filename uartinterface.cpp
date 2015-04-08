@@ -2,16 +2,28 @@
 
 UARTInterface::UARTInterface()
 {
+    serialPort.setPortName("COM5");
+
+    serialPort.setBaudRate(QSerialPort::Baud19200);
+    serialPort.setDataBits(QSerialPort::Data8);
+    serialPort.setParity(QSerialPort::NoParity);
+    serialPort.setStopBits(QSerialPort::OneStop);
+    serialPort.setFlowControl(QSerialPort::NoFlowControl);
+
+    serialPort.open(QSerialPort::ReadWrite);
 
 }
 
 UARTInterface::~UARTInterface()
 {
-
+    serialPort.close();
 }
 
 void UARTInterface::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode)
 {
+    //Invert the angles
+    angles = -angles;
+
     //Send the correct values over the UART Interface
     unsigned int x = 1000 + ((angles.x()-minMaxAngles.left())/(minMaxAngles.width())*1000.0f);
 
@@ -29,7 +41,7 @@ void UARTInterface::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMod
     else if(laserMode == LASER_OFF)
         msg[4] = 0x02;
 
-    //pGame->sendSerialMessage(msg);
+    serialPort.write(msg, 5);
 
 
 }

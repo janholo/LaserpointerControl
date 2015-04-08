@@ -5,6 +5,7 @@
 #include <QBasicTimer>
 #include "laserpointer.h"
 #include "observer.h"
+#include "uartinterface.h"
 
 enum Direction
 {
@@ -68,6 +69,7 @@ private:
     int counter;
 
     Laserpointer laserpointer;
+    UARTInterface uartInterface;
 
 };
 

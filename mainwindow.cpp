@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     laserpointer.registerObserver(this);
     laserpointer.registerObserver(ui->openGLWidget);
+    laserpointer.registerObserver(&uartInterface);
     laserpointer.notifyObservers();
 
     timer.start(10, this);

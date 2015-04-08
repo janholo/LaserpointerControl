@@ -4,7 +4,7 @@ Laserpointer::Laserpointer()
 {
     angles = QPointF(0,0);
 
-    minMaxAngles = QRectF(QPointF(-90, -90), QPointF(90,90));
+    minMaxAngles = QRectF(QPointF(-45, -45), QPointF(45,45));
 
     laserMode = LASER_OFF;
 }

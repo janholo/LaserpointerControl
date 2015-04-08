@@ -2,6 +2,8 @@
 #define UARTINTERFACE_H
 
 #include "observer.h"
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 
 class UARTInterface : public Observer
 {
@@ -11,6 +13,8 @@ public:
 
     void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode);
 
+private:
+    QSerialPort serialPort;
 
 };
 

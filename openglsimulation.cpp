@@ -16,7 +16,7 @@ OpenGLSimulation::OpenGLSimulation(QWidget *parent)
     cameraDistance = 15.0;
 
     actualAngle = QPointF(0,0);
-    actualAngleSpeed = QPointF(90,90);
+    actualAngleSpeed = QPointF(180,180);
     targetAngle = QPointF(0,0);
 
 
