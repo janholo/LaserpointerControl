@@ -3,6 +3,7 @@
 
 #include <QRectF>
 #include <QPointF>
+#include <vector>
 
 enum LaserMode
 {
@@ -16,7 +17,7 @@ public:
     Observer();
     ~Observer();
 
-    virtual void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode) = 0;
+    virtual void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode, std::vector<QPointF> calibrationAngles) = 0;
 };
 
 #endif // OBSERVER_H

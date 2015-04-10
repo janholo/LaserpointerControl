@@ -11,9 +11,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->laserStateComboBox->addItem("LASER_ON");
 
     direction = NONE;
-    //Create Timer
+
+    calibrationState = OFF;
 
     disableSliderUpdate = false;
+
 
     laserpointer.registerObserver(this);
     laserpointer.registerObserver(ui->openGLWidget);
@@ -38,7 +40,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode)
+void MainWindow::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode, std::vector<QPointF> calibrationAngles)
 {
     disableSliderUpdate = true;
 
@@ -172,4 +174,63 @@ void MainWindow::on_pushButton_2_released()
 {
     counter = 0;
     direction = NONE;
+}
+
+void MainWindow::on_calibrationButton_clicked()
+{
+    switch(calibrationState)
+    {
+        case OFF:
+        {
+            //Start the calibration
+            ui->calibrationText->setText("Calibrate TOP LEFT position:");
+            ui->calibrationButton->setText("Save position");
+
+            calibrationState = LEFTTOP;
+            break;
+        }
+        case LEFTTOP:
+        {
+            calibrationBuffer[0] = laserpointer.getAngles();
+
+            ui->calibrationText->setText("Calibrate TOP RIGHT position:");
+            ui->calibrationButton->setText("Save position");
+
+            calibrationState = RIGHTTOP;
+            break;
+        }
+        case RIGHTTOP:
+        {
+            calibrationBuffer[1] = laserpointer.getAngles();
+
+            ui->calibrationText->setText("Calibrate BOTTOM RIGHT position:");
+            ui->calibrationButton->setText("Save position");
+
+            calibrationState = RIGHTBOTTOM;
+            break;
+        }
+        case RIGHTBOTTOM:
+        {
+            calibrationBuffer[2] = laserpointer.getAngles();
+
+            ui->calibrationText->setText("Calibrate BOTTOM LEFT position:");
+            ui->calibrationButton->setText("Save position");
+
+            calibrationState = LEFTBOTTOM;
+            break;
+        }
+        case LEFTBOTTOM:
+        {
+            calibrationBuffer[3] = laserpointer.getAngles();
+            laserpointer.setCalibrationAngles(calibrationBuffer);
+
+            ui->calibrationText->setText("Finished calibration:");
+            ui->calibrationButton->setText("Start new calibration");
+
+            calibrationState = OFF;
+            break;
+        }
+    }
+
+
 }

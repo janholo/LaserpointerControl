@@ -108,6 +108,11 @@ void OpenGLSimulation::initTextures()
     laserTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     laserTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
     laserTexture->setWrapMode(QOpenGLTexture::Repeat);
+
+    greenLaserTexture = new QOpenGLTexture(QImage(":images/images/greenLaser.png"));
+    greenLaserTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    greenLaserTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    greenLaserTexture->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void OpenGLSimulation::resizeGL(int w, int h)
@@ -247,7 +252,32 @@ void OpenGLSimulation::paintGL()
 
         paintCube(matrix);
 
-        servoTexture->bind();
+        for(QPointF calibAngle : calibrationAngles)
+        {
+            greenLaserTexture->bind();
+
+            // Green Laser Beam
+            matrix.setToIdentity();
+
+            matrix.translate(0.0, servoSpindleSize.y(), 0.0);
+            matrix.translate(servoSpindle);
+
+            matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), calibAngle.x()));
+            matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,-1), -90));
+
+
+            matrix.translate(servo2Contact);
+
+            matrix.translate(0.0, laserSize.y()/2.0, 0.0);
+            matrix.translate(0.0, servoSpindleSize.y(), 0.0);
+            matrix.translate(servoSpindle);
+
+            matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,-1,0), calibAngle.y()));
+            matrix.translate(0,0,-500);
+            matrix.scale(0.1,0.1,1000);
+
+            paintCube(matrix);
+        }
     }
 }
 
@@ -356,8 +386,9 @@ void OpenGLSimulation::timerEvent(QTimerEvent *)
     update();
 }
 
-void OpenGLSimulation::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode)
+void OpenGLSimulation::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode, std::vector<QPointF> calibrationAngles)
 {
     targetAngle = angles;
     this->laserMode = laserMode;
+    this->calibrationAngles = calibrationAngles;
 }

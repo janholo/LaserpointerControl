@@ -9,6 +9,7 @@
         <file>images/metal.jpg</file>
         <file>images/laser.png</file>
         <file>images/grass.png</file>
+        <file>images/greenLaser.png</file>
     </qresource>
     <qresource prefix="/shader">
         <file>shader/fshader.glsl</file>
