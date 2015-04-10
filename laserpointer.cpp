@@ -7,10 +7,10 @@ Laserpointer::Laserpointer()
     minMaxAngles = QRectF(QPointF(-45, -45), QPointF(45,45));
 
     calibrationAngles.clear();
-    calibrationAngles.push_back(QPointF(0,0));
-    calibrationAngles.push_back(QPointF(0,0));
-    calibrationAngles.push_back(QPointF(0,0));
-    calibrationAngles.push_back(QPointF(0,0));
+    calibrationAngles.push_back(QPointF(-30,30));
+    calibrationAngles.push_back(QPointF(30,30));
+    calibrationAngles.push_back(QPointF(30,-30));
+    calibrationAngles.push_back(QPointF(-30,-30));
 
     laserMode = LASER_OFF;
 }
