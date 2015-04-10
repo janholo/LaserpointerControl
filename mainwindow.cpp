@@ -14,10 +14,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
     calibrationState = OFF;
 
+    disableSliderUpdate = false;
+
+
     laserpointer.registerObserver(this);
     laserpointer.registerObserver(ui->openGLWidget);
     laserpointer.registerObserver(&uartInterface);
     laserpointer.notifyObservers();
+
+    //Update Status Bar
+    if(uartInterface.isConnected())
+    {
+        statusBar()->showMessage("uart interface: connected");
+    }
+    else
+    {
+        statusBar()->showMessage("uart interface: NOT connected");
+    }
 
     timer.start(10, this);
 }
@@ -29,6 +42,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode, std::vector<QPointF> calibrationAngles)
 {
+    disableSliderUpdate = true;
+
     //Update the UI Elements
     ui->xAxisSlider->setMinimum(minMaxAngles.left());
     ui->xAxisSlider->setMaximum(minMaxAngles.right());
@@ -42,6 +57,8 @@ void MainWindow::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode l
     ui->yAxisLabel->setText(QString::number(angles.y(), 'f', 1) + " °");
 
     ui->laserStateComboBox->setCurrentIndex(laserMode);
+
+    disableSliderUpdate = false;
 }
 
 void MainWindow::on_laserStateComboBox_currentIndexChanged(int index)
@@ -51,11 +68,17 @@ void MainWindow::on_laserStateComboBox_currentIndexChanged(int index)
 
 void MainWindow::on_xAxisSlider_valueChanged(int value)
 {
+    if(disableSliderUpdate)
+        return;
+
     laserpointer.setAngleX(value);
 }
 
 void MainWindow::on_yAxisSlider_valueChanged(int value)
 {
+    if(disableSliderUpdate)
+        return;
+
     laserpointer.setAngleY(value);
 }
 

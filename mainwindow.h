@@ -81,6 +81,8 @@ private:
     Direction direction;
     int counter;
 
+    bool disableSliderUpdate;
+
     Laserpointer laserpointer;
     UARTInterface uartInterface;
 
