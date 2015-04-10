@@ -6,6 +6,12 @@ Laserpointer::Laserpointer()
 
     minMaxAngles = QRectF(QPointF(-45, -45), QPointF(45,45));
 
+    calibrationAngles.clear();
+    calibrationAngles.push_back(QPointF(0,0));
+    calibrationAngles.push_back(QPointF(0,0));
+    calibrationAngles.push_back(QPointF(0,0));
+    calibrationAngles.push_back(QPointF(0,0));
+
     laserMode = LASER_OFF;
 }
 
@@ -61,7 +67,16 @@ void Laserpointer::notifyObservers()
 {
     for(Observer *o : observerList)
     {
-        o->updateObserver(minMaxAngles, angles, laserMode);
+        o->updateObserver(minMaxAngles, angles, laserMode, calibrationAngles);
     }
+}
+
+void Laserpointer::setCalibrationAngles(QPointF *calibrationAngles)
+{
+    this->calibrationAngles.clear();
+    std::copy(calibrationAngles, calibrationAngles+4, std::back_inserter(this->calibrationAngles));
+    notifyObservers();
+
+
 }
 

@@ -11,7 +11,7 @@ public:
     UARTInterface();
     ~UARTInterface();
 
-    void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode);
+    void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode, std::vector<QPointF> calibrationAngles);
 
 private:
     QSerialPort serialPort;

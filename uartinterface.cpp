@@ -19,7 +19,7 @@ UARTInterface::~UARTInterface()
     serialPort.close();
 }
 
-void UARTInterface::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode)
+void UARTInterface::updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode, std::vector<QPointF> calibrationAngles)
 {
     //Invert the angles
     angles = -angles;

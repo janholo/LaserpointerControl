@@ -1,6 +1,8 @@
 #ifndef OPENGLSIMULATION_H
 #define OPENGLSIMULATION_H
 
+#include <vector>
+
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
@@ -25,7 +27,8 @@ public:
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
 
-    void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode);
+    void updateObserver(QRectF minMaxAngles, QPointF angles, LaserMode laserMode, std::vector<QPointF> calibrationAngles);
+
 
 protected:
     void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
@@ -52,6 +55,7 @@ private:
 
     QOpenGLTexture *grassTexture;
     QOpenGLTexture *laserTexture;
+    QOpenGLTexture *greenLaserTexture;
 
     GeometryEngine *cubeGeometry;
     GeometryEngine *planeGeometry;
@@ -81,6 +85,8 @@ private:
 
 
     QPointF targetAngle;
+
+    std::vector<QPointF> calibrationAngles;
 
 signals:
 
